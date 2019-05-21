@@ -12,6 +12,14 @@ def load_map_tiff(filename):
         return mask
 
 
+# Load Pickle file
+def read_pickle_data(filename):
+    # Open and read codemap
+    with open(filename, 'rb') as f:
+        data = pickle.load(f)
+    return data
+
+
 def crop_img(img, x, y, width, height, channelsFirst=True):
     if channelsFirst:
         # channels, x, y
