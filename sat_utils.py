@@ -5,6 +5,14 @@ import matplotlib.pyplot as plt
 import pickle
 from skimage.morphology import disk, dilation,erosion, opening
 
+
+# Load Pickle file
+def read_pickle_data(filename):
+    # Open and read codemap
+    with open(filename, 'rb') as f:
+        data = pickle.load(f)
+    return data
+
 def load_map_tiff(filename):
     with rasterio.open(filename) as ds:
         mask = ds.read()
