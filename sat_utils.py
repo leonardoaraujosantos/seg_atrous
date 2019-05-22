@@ -55,8 +55,23 @@ def img_mean_norm(in_img):
     return (in_img - np.mean(in_img)) / (np.max(in_img) - np.min(in_img))
 
 
-def img_minmax_norm(in_img):
-    return (in_img - np.min(in_img)) / (np.max(in_img) - np.min(in_img))
+def img_minmax_norm(image):
+    """Min-max normalisation."""
+    out = np.zeros_like(image).astype(np.float32)
+    if image.sum() == 0:
+        return image  # bands  # Probably wrong - error in supplied file.
+
+    for jj in range(image.shape[2]):
+        cc = image[:, :, jj].min()
+        dd = image[:, :, jj].max()
+
+        tt = (image[:, :, jj] - cc) / (dd - cc)
+        out[:, :, jj] = tt
+    return out.astype(np.float32)
+
+
+	
+    #return (in_img - np.min(in_img)) / (np.max(in_img) - np.min(in_img))
 
 
 # Crop some blocks from image
