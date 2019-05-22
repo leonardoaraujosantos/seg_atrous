@@ -3,6 +3,8 @@ import numpy as np
 import rasterio
 import matplotlib.pyplot as plt
 import pickle
+from skimage.morphology import disk, dilation,erosion, opening
+
 
 
 def load_map_tiff(filename):
@@ -90,6 +92,10 @@ def crop_blocks(input, target, size_box=76, display=False, earlyStop=None):
             y = box_v * size_box
             input_box = crop_img(input, x, y, size_box, size_box)
             target_box = crop_img(target, x, y, size_box, size_box)
+            #erode the touching border
+            target_box[1,:,:] = erosion(target_box[1, :, :], disk(1))
+
+
             dict_input[cnt_img] = input_box
             dict_output[cnt_img] = target_box
             cnt_img += 1
