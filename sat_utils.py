@@ -93,11 +93,12 @@ def crop_blocks(input, target, size_box=76, display=False, earlyStop=None):
             input_box = crop_img(input, x, y, size_box, size_box)
             target_box = crop_img(target, x, y, size_box, size_box)
             #erode the touching border
-            target_box[1,:,:] = erosion(target_box[1, :, :], disk(1))
+            target_box[1,:,:] = erosion(target_box[1, :, :], disk(2))
+            target_box[2,:,:] = erosion(target_box[2, :, :], disk(1))
 
 
             dict_input[cnt_img] = input_box
-            dict_output[cnt_img] = target_box
+            dict_output[cnt_img] = target_box[0:2,:,:]
             cnt_img += 1
 
             if cnt_img > earlyStop:
