@@ -1,4 +1,5 @@
 from PIL import Image
+import torch
 import numpy as np
 import rasterio
 import matplotlib.pyplot as plt
@@ -53,6 +54,19 @@ def img_standardization(in_img):
 def img_mean_norm(in_img):
     return (in_img-np.mean(in_img))/(np.max(in_img)-np.min(in_img))
 
+def img_minmax_norm_torch(in_tensor):
+    batch, channels, h, w = in_tensor.size()
+    output = torch.zeros_like(in_tensor)
+    
+    # Populate output
+    for chanel in range(channels):
+        # Get min/max values per channel
+        min_val = in_tensor[:,chanel,:,:].min()
+        max_val = in_tensor[:,chanel,:,:].max()
+        output[:,chanel,:,:] = (in_tensor[:,chanel,:,:] - min_val) / (max_val - min_val)
+    
+    return output
+
 
 def img_minmax_norm(image, channelsFirst=True):
     """Min-max normalisation."""
@@ -85,7 +99,7 @@ def img_minmax_norm(image, channelsFirst=True):
 
 
 # Crop some blocks from image
-def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_size=1, channelsFirst=True):
+def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_size=1, channelsFirst=True, do_preprocess=False):
     size_box = size_box
     if channelsFirst:
         num_hz_box = int(input.shape[1] / size_box)
@@ -104,8 +118,9 @@ def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_
             x = box_h * size_box
             y = box_v * size_box
             input_box = crop_img(input, x, y, size_box, size_box, channelsFirst)
-            # Doing the min_max norm on the cropped data
-            input_box = img_minmax_norm(input_box, channelsFirst)
+            if do_preprocess:
+                # Doing the min_max norm on the cropped data
+                input_box = img_minmax_norm(input_box, channelsFirst)
             target_box = crop_img(target, x, y, size_box, size_box, channelsFirst)
             
             # erode the touching border
@@ -122,9 +137,9 @@ def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_
 
             if display:
                 print('img_%s_input.png' % cnt_img)
-                print(input_box.shape)
                 input_box_rgb = get_rgb(input_box, channelsFirst)
-                #input_box_rgb = sat_utils.img_minmax_norm(input_box_rgb, channelsFirst)
+                if not do_preprocess:
+                    input_box_rgb = img_minmax_norm(input_box_rgb, channelsFirst)
                 if channelsFirst:
                     input_box_rgb = np.moveaxis(input_box_rgb, 0, 2)
                 
