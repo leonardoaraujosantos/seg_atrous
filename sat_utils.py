@@ -55,15 +55,25 @@ def img_mean_norm(in_img):
     return (in_img-np.mean(in_img))/(np.max(in_img)-np.min(in_img))
 
 def img_minmax_norm_torch(in_tensor):
-    batch, channels, h, w = in_tensor.size()
+    if len(in_tensor.shape) > 3:
+        batch, channels, h, w = in_tensor.size()
+    else:
+        batch, h, w = in_tensor.size()
+        channels = 1
     output = torch.zeros_like(in_tensor)
     
     # Populate output
-    for chanel in range(channels):
+    if channels > 1:
+        for chanel in range(channels):
+            # Get min/max values per channel
+            min_val = in_tensor[:,chanel,:,:].min()
+            max_val = in_tensor[:,chanel,:,:].max()
+            output[:,chanel,:,:] = (in_tensor[:,chanel,:,:] - min_val) / (max_val - min_val)
+    else:
         # Get min/max values per channel
-        min_val = in_tensor[:,chanel,:,:].min()
-        max_val = in_tensor[:,chanel,:,:].max()
-        output[:,chanel,:,:] = (in_tensor[:,chanel,:,:] - min_val) / (max_val - min_val)
+        min_val = in_tensor.min()
+        max_val = in_tensor.max()
+        output = (in_tensor - min_val) / (max_val - min_val)
     
     return output
 
