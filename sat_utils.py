@@ -81,8 +81,8 @@ def img_minmax_norm_torch(in_tensor):
 def img_minmax_norm(image, channelsFirst=True):
     """Min-max normalisation."""
     out = np.zeros_like(image).astype(np.float32)
-    if image.sum() == 0:
-        raise ValueError("Probably wrong - error in supplied file.")
+   # if image.sum() == 0:
+   #     raise ValueError("Probably wrong - error in supplied file.")
     
     if channelsFirst:
         num_channels = image.shape[0]
@@ -109,7 +109,7 @@ def img_minmax_norm(image, channelsFirst=True):
 
 
 # Crop some blocks from image
-def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_size=1, channelsFirst=True, do_preprocess=False):
+def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_size=1, channelsFirst=True, do_preprocess=False, offset=0):
     size_box = size_box
     if channelsFirst:
         num_hz_box = int(input.shape[1] / size_box)
@@ -138,8 +138,8 @@ def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_
                 target_box[1, :, :] = erosion(target_box[1, :, :], disk(disk_size))
 
 
-            dict_input[cnt_img] = input_box
-            dict_output[cnt_img] = target_box
+            dict_input[cnt_img+offset] = input_box
+            dict_output[cnt_img+offset] = target_box
             cnt_img += 1
 
             if cnt_img > earlyStop:
