@@ -182,7 +182,7 @@ def get_info_percent(label):
 # Clean data where amount of information is low
 def clean_data(in_dict, lbl_dict, min_perc=3.0):
     list_delete = []
-    for key, val in all_target_dct.items():
+    for key, val in lbl_dict.items():
         perc = get_info_percent(val[0,:,:])
         if perc < min_perc:
             list_delete.append(key)
