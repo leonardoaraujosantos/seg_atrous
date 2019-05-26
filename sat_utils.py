@@ -165,3 +165,31 @@ def crop_blocks(input, target, size_box=76, display=False, earlyStop=None, disk_
             break
 
     return dict_input, dict_output
+
+
+# Return ratio of one elements related to the image size
+# ie: A blank image will be 0% a completelly filled image will be 100%
+def get_info_percent(label):
+    # Get number of ones
+    num_ones = np.count_nonzero(label)
+    # Total size
+    total = label.size
+    
+    ratio = (100.0 * num_ones) / total
+    return ratio
+
+
+# Clean data where amount of information is low
+def clean_data(in_dict, lbl_dict, min_perc=3.0):
+    list_delete = []
+    for key, val in all_target_dct.items():
+        perc = get_info_percent(val[0,:,:])
+        if perc < min_perc:
+            list_delete.append(key)
+    
+    # Delete elements from dict
+    for key in list_delete:
+        del in_dict[key]
+        del lbl_dict[key]
+    
+    return in_dict, lbl_dict
