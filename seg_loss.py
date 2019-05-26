@@ -12,7 +12,7 @@ from torch.optim import lr_scheduler
 # Reference: https://gist.github.com/wassname/7793e2058c5c9dacb5212c0ac0b18a8a
 # https://arxiv.org/pdf/1606.04797v1.pdf
 def dice_loss(model_outputs, labels):    
-    smooth = 1.
+    smooth = 1e-4
 
     iflat = model_outputs.view(-1)
     tflat = labels.view(-1)
@@ -26,7 +26,7 @@ def dice_loss(model_outputs, labels):
 # Reference: https://gist.github.com/wassname/f1452b748efcbeb4cb9b1d059dce6f96
 # This requires that both labels and model_outputs are on the same range (0..1)
 def iou_loss(model_outputs, labels):
-    smooth = 1.
+    smooth = 1e-4
     # Avoid negative values 
     intersection = torch.abs(model_outputs * labels).sum()
     union = torch.abs(model_outputs).sum() + torch.abs(labels).sum()
