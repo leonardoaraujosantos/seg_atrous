@@ -83,6 +83,7 @@ class AtrousSeg(nn.Module):
         # Better for MSE
         #return result
         # Better for BCEWithLogitsLoss
+        return torch.sigmoid(result)
         return F.sigmoid(result)
         #return result
         #return self.model(x)
