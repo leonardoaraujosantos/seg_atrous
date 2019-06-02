@@ -15,7 +15,11 @@ from torch.optim import lr_scheduler
 def iou(model_outputs, labels):
     smooth = 1e-4
     bin_model_outputs = torch.zeros_like(model_outputs, requires_grad=False).type(torch.LongTensor)
+    
+    # Binarize label
     bin_labels = (labels > 0).type(torch.LongTensor)
+    
+    # Binarize output
     # Convert all channels from model_outputs to binary
     list_max = [torch.max(model_outputs[:,ch,:,:]) for ch in range(model_outputs.shape[1])]
     list_min = [torch.min(model_outputs[:,ch,:,:]) for ch in range(model_outputs.shape[1])]
