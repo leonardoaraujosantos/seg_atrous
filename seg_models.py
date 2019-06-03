@@ -12,7 +12,7 @@ from torch.optim import lr_scheduler
 
 # Input 76x76 output 16x16
 class AtrousSeg(nn.Module):
-    def __init__(self, num_classes=1, num_channels=8):
+    def __init__(self, num_classes=1, num_channels=8, input_size=76):
         super().__init__()
         self.model = nn.Sequential(
             nn.BatchNorm2d(num_channels),
@@ -68,7 +68,7 @@ class AtrousSeg(nn.Module):
             nn.BatchNorm2d(1024),
             nn.Conv2d(1024, num_classes, kernel_size=1, stride=1, dilation = 1),
             #nn.Sigmoid(),
-            nn.UpsamplingBilinear2d(size=(76, 76)),
+            nn.UpsamplingBilinear2d(size=(input_size, input_size)),
         )
         # Initialize Weights
         for m in self.model:
@@ -83,15 +83,8 @@ class AtrousSeg(nn.Module):
         # Better for MSE
         #return result
         # Better for BCEWithLogitsLoss
-        return torch.sigmoid(result)
-        return F.sigmoid(result)
+        #return torch.sigmoid(result)
+        #return F.sigmoid(result)
         #return result
         #return self.model(x)
-        if self.training:
-            return result
-        else:
-            return F.sigmoid(result)
-        #    result = self.model(x)
-        #    print(x.shape)
-        #    print(result.shape)
-        #    F.softmax(result, dim=2)
+        return result
