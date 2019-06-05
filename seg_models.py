@@ -9,11 +9,14 @@ from torchvision.utils import make_grid
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim import lr_scheduler
 
+from torchsummary import summary
 
 # Input 76x76 output 16x16
 class AtrousSeg(nn.Module):
     def __init__(self, num_classes=1, num_channels=8, input_size=76):
         super().__init__()
+        self.__num_channels = num_channels
+        self.__input_size = input_size
         self.model = nn.Sequential(
             nn.BatchNorm2d(num_channels),
             nn.Conv2d(num_channels, 64, kernel_size=3, stride=1, padding=1, dilation = 1), # Front           
@@ -78,6 +81,9 @@ class AtrousSeg(nn.Module):
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
 
+    def get_summary(self):
+        summary(self, input_size=(self.__num_channels, self.__input_size, self.__input_size))
+    
     def forward(self, x):
         result = self.model(x)
         # Better for MSE

@@ -18,8 +18,8 @@ def dice_loss(model_outputs, labels, do_sigmoid=True):
     if do_sigmoid:
         model_outputs = torch.sigmoid(model_outputs)
 
-    iflat = model_outputs.view(-1)
-    tflat = labels.view(-1)
+    iflat = model_outputs.contiguous().view(-1)
+    tflat = labels.contiguous().view(-1)
     intersection =  torch.abs(iflat * tflat).sum()
     
     return 1 - ((2. * intersection + smooth) /
